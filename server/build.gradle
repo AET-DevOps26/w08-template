@@ -26,6 +26,9 @@ dependencies {
 	// DB dependencies
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	runtimeOnly 'org.postgresql:postgresql'
+
+	//Prometheus dependencies
+	implementation 'io.micrometer:micrometer-registry-prometheus:1.9.1'
 }
 
 tasks.named('test') {

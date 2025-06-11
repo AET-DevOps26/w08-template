@@ -10,7 +10,7 @@ services:
       - LLM_SERVICE_URL=http://llm:5000
       - MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE=health,info,prometheus
     ports:
-      - "8081:8080"
+      - "8080:8080"
     restart: unless-stopped
 
   database:

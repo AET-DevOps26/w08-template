@@ -9,6 +9,7 @@ from langchain_core.prompts import PromptTemplate
 from langchain.callbacks.manager import CallbackManagerForLLMRun
 import logging
 import sys
+from prometheus_fastapi_instrumentator import Instrumentator
 
 # Environment configuration
 CHAIR_API_KEY = os.getenv("CHAIR_API_KEY")
@@ -20,7 +21,7 @@ app = FastAPI(
     description="Service that generates personalized food recommendations using an LLM",
     version="1.0.0"
 )
-  
+Instrumentator().instrument(app).expose(app)
 
 class JsonFormatter(logging.Formatter):
     def format(self, record):

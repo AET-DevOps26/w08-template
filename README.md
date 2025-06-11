@@ -97,6 +97,15 @@ python main.py
 ```
 The LLM service will be available at [http://localhost:5000](http://localhost:5000).
 
+### Prometheus
+
+Access Prometheus at [http://localhost:9090](http://localhost:9090)
+
+### Grafana
+
+Access Grafana at [http://localhost:3001](http://localhost:3001)
+
+
 ## Development Workflow
 
 ### Client Development
@@ -179,24 +188,39 @@ The project includes GitHub Actions workflows for:
 ## Project Structure
 
 ```
-├── client/                  # SvelteKit client
-│   ├── src/                 # Source code
-│   ├── static/              # Static assets
-│   └── package.json         # Client dependencies
+├── client/                   # SvelteKit client
+│   ├── src/                  # Source code
+│   ├── static/               # Static assets
+│   └── package.json          # Client dependencies
 │
-├── server/                  # Spring Boot server
-│   ├── src/                 # Source code including gRPC services
-│   ├── build.gradle         # Gradle build file
-│   └── Dockerfile           # Server Dockerfile
+├── server/                   # Spring Boot server
+│   ├── src/                  # Source code including gRPC services
+│   ├── build.gradle          # Gradle build file
+│   └── Dockerfile            # Server Dockerfile
+|
+├── grafana/provisioning      # Grafana service
+│   ├── dashboards            # Grafana dashboard
+│   ├── sample-dashboard.json # Example dashboard
+|   ├── datasources           # Loki service
+│   └── notifiers             # Alerts
+|
+├── Loki                      # Loki service
+│   └── loki-config.yaml      # Loki configuration
+|
+├── Prometheus                # Prometheus service
+│   └── prometheus.yaml       # Prometheus configuration
+|
+├── Promtail                  # Promtail service
+│   └── promtail.yaml         # Promtail configuration
+|
+├── llm/                      # Python LLM service
+│   ├── main.py               # FastAPI application
+│   ├── requirements.txt      # Python dependencies
+│   └── Dockerfile            # LLM service Dockerfile
 │
-├── llm/                     # Python LLM service
-│   ├── main.py              # FastAPI application
-│   ├── requirements.txt     # Python dependencies
-│   └── Dockerfile           # LLM service Dockerfile
-│
-├── docs/                    # API documentation (Bruno collection)
-├── compose.yml              # Docker Compose for local development
-└── .github/workflows/       # CI/CD workflows
+├── docs/                     # API documentation (Bruno collection)
+├── compose.yml               # Docker Compose for local development
+└── .github/workflows/        # CI/CD workflows
 ```
 
 ## API Documentation

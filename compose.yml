@@ -8,8 +8,9 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
       - DATABASE_URL=jdbc:postgresql://database:5432/mensa
       - LLM_SERVICE_URL=http://llm:5000
+      - MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE=health,info,prometheus
     ports:
-      - "8080:8080"
+      - "8081:8080"
     restart: unless-stopped
 
   database:
@@ -46,7 +47,7 @@ services:
       - CHAIR_API_KEY=${CHAIR_API_KEY:-your_api_key_here}
     ports:
       - "5000:5000"
-    restart: unless-stopped
+    restart: unless-stopped 
 
   loki:
     image: grafana/loki:2.9.0
@@ -54,7 +55,39 @@ services:
     ports:
       - "3100:3100"
     volumes:
-      - ./loki-config.yaml:/etc/loki/local-config.yaml:ro
+      - ./loki-config.yaml:/etc/loki/local-config.yaml:ro 
+  
+  prometheus: 
+    image: prom/prometheus:v2.52.0
+    container_name: prometheus
+    ports: 
+      - "9090:9090"
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana-oss:latest
+    container_name: grafana
+    ports:
+      - "3001:3000"
+    volumes:
+      - grafana-storage:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    entrypoint: ["sh", "-c", "/etc/grafana/provisioning/init_grafana.sh"]
+    depends_on:
+      - prometheus 
     restart: unless-stopped
 
   promtail:
@@ -69,3 +102,6 @@ services:
 
 volumes:
   db_data:
+  prometheus_data:
+  grafana-storage:
+  

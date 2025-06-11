@@ -7,6 +7,8 @@ from pydantic import BaseModel, Field
 from langchain.llms.base import LLM
 from langchain_core.prompts import PromptTemplate
 from langchain.callbacks.manager import CallbackManagerForLLMRun
+import logging
+import sys
 
 # Environment configuration
 CHAIR_API_KEY = os.getenv("CHAIR_API_KEY")
@@ -18,7 +20,25 @@ app = FastAPI(
     description="Service that generates personalized food recommendations using an LLM",
     version="1.0.0"
 )
+  
 
+class JsonFormatter(logging.Formatter):
+    def format(self, record):
+        log_record = {
+            "timestamp": self.formatTime(record, self.datefmt),
+            "level": record.levelname,
+            "logger": record.name,
+            "message": record.getMessage(),
+        }
+        if record.exc_info:
+            log_record["exception"] = self.formatException(record.exc_info)
+        return json.dumps(log_record)
+
+# Configure root logger for JSON output
+handler = logging.StreamHandler(sys.stdout)
+handler.setFormatter(JsonFormatter())
+logging.basicConfig(level=logging.INFO, handlers=[handler])
+# ...rest of your code...
 
 class RecommendRequest(BaseModel):
     """

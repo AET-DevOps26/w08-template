@@ -77,7 +77,7 @@ services:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
       - GF_USERS_ALLOW_SIGN_UP=false
-
+    entrypoint: ["sh", "-c", "/etc/grafana/provisioning/init_grafana.sh"]
     depends_on:
       - prometheus
     restart: unless-stopped

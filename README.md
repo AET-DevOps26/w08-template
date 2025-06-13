@@ -1,4 +1,4 @@
-# DevOps W07 In-Class Exercise Template
+# DevOps W08 In-Class Exercise Template
 
 This repository contains a full-stack canteen application with a SvelteKit client, Spring Boot server, and LLM recommendation service. It demonstrates modern web application architecture and DevOps practices.
 

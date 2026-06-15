@@ -1,4 +1,4 @@
-# DevOps W07 In-Class Exercise Template
+# DevOps W08 In-Class Exercise Template
 
 This repository contains a full-stack canteen application with a SvelteKit client, Spring Boot server, and LLM recommendation service. It demonstrates modern web application architecture and DevOps practices.
 
@@ -14,7 +14,7 @@ This project includes:
 ## Prerequisites
 
 - Node.js (v22 or later)
-- Java JDK 21+
+- Java JDK 25+
 - Python 3.x
 - Gradle
 - Docker and Docker Compose
@@ -26,8 +26,8 @@ This project includes:
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/w07-template.git
-cd w07-template
+git clone https://github.com/yourusername/w08-template.git
+cd w08-template
 ```
 
 ### Client Setup
@@ -95,7 +95,9 @@ The server API will be available at [http://localhost:8080](http://localhost:808
 cd llm
 python main.py
 ```
-The LLM service will be available at [http://localhost:5000](http://localhost:5000).
+The LLM service will be available at [http://localhost:5001](http://localhost:5001).
+
+By default the service talks to a local **LM Studio** instance (`http://host.docker.internal:1234/v1/chat/completions`, model `google/gemma-4-e2b`). To use the TUM-hosted **Logos** endpoint instead, set `LOGOS_API_KEY` in `.env` (or your shell) — it overrides the LM Studio defaults automatically. See [`.env`](.env) for details.
 
 ### Prometheus
 
@@ -160,7 +162,7 @@ The project includes Docker configurations for containerized deployment.
 2. Access the application:
    - Client: [http://localhost:3000](http://localhost:3000)
    - Server: [http://localhost:8080](http://localhost:8080)
-   - LLM Service: [http://localhost:5000](http://localhost:5000)
+   - LLM Service: [http://localhost:5001](http://localhost:5001)
    - Database: PostgreSQL on port 5432
 
 ## Kubernetes Deployment

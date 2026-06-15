@@ -1,0 +1,19 @@
+meta {
+  name: Toggle Feature
+  type: http
+  seq: 6
+}
+
+put {
+  url: http://localhost:8080/api/features/menu-filter?enabled=true
+  body: none
+  auth: inherit
+}
+
+params:query {
+  enabled: true
+}
+
+body:json {
+  true
+}

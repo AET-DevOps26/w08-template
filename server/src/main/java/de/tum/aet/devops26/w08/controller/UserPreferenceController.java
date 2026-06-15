@@ -1,7 +1,7 @@
-package de.tum.aet.devops25.w07.controller;
+package de.tum.aet.devops26.w08.controller;
 
-import de.tum.aet.devops25.w07.entity.UserPreferences;
-import de.tum.aet.devops25.w07.service.UserPreferenceService;
+import de.tum.aet.devops26.w08.entity.UserPreferences;
+import de.tum.aet.devops26.w08.service.UserPreferenceService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

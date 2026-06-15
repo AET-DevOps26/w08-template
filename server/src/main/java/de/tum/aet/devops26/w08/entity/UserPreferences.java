@@ -1,4 +1,4 @@
-package de.tum.aet.devops25.w07.entity;
+package de.tum.aet.devops26.w08.entity;
 
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;

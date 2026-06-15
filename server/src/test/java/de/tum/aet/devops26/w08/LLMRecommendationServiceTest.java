@@ -1,8 +1,9 @@
-package de.tum.aet.devops25.w07;
+package de.tum.aet.devops26.w08;
 
-import de.tum.aet.devops25.w07.client.LLMRestClient;
-import de.tum.aet.devops25.w07.dto.Dish;
-import de.tum.aet.devops25.w07.service.LLMRecommendationService;
+import de.tum.aet.devops26.w08.client.LLMRestClient;
+import de.tum.aet.devops26.w08.dto.Dish;
+import de.tum.aet.devops26.w08.service.LLMRecommendationService;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,7 +28,7 @@ class LLMRecommendationServiceTest {
 
     @BeforeEach
     void setUp() {
-        llmRecommendationService = new LLMRecommendationService(llmRestClient);
+        llmRecommendationService = new LLMRecommendationService(llmRestClient, new SimpleMeterRegistry());
     }
 
     @Test

@@ -4,16 +4,29 @@ import requests
 from typing import Dict, Any, List, Optional
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
-from langchain.llms.base import LLM
+from langchain_core.language_models.llms import LLM
 from langchain_core.prompts import PromptTemplate
-from langchain.callbacks.manager import CallbackManagerForLLMRun
+from langchain_core.callbacks.manager import CallbackManagerForLLMRun
 import logging
 import sys
 from prometheus_fastapi_instrumentator import Instrumentator
 
-# Environment configuration
-CHAIR_API_KEY = os.getenv("CHAIR_API_KEY")
-API_URL = "https://gpu.aet.cit.tum.de/api/chat/completions"
+# Environment configuration: pick the upstream provider based on env.
+#
+# If LOGOS_API_KEY is set we point at the TUM Logos endpoint and default
+# to the openai/gpt-oss-120b model. Otherwise we default to LM Studio
+# running on the host (host.docker.internal:1234 from inside Docker on
+# macOS/Windows) with gemma-4-e2b. Either profile can still be
+# overridden explicitly by setting LLM_API_URL / LLM_MODEL.
+LOGOS_API_KEY = os.getenv("LOGOS_API_KEY")
+if LOGOS_API_KEY:
+    API_URL = "https://logos.aet.cit.tum.de/v1/chat/completions"
+    MODEL_NAME = "openai/gpt-oss-120b"
+    LLM_API_KEY = LOGOS_API_KEY
+else:
+    API_URL = os.getenv("LLM_API_URL", "http://localhost:1234/v1/chat/completions")
+    MODEL_NAME = os.getenv("LLM_MODEL", "google/gemma-4-e2b")
+    LLM_API_KEY = os.getenv("LLM_API_KEY") or os.getenv("CHAIR_API_KEY")
 
 # Create FastAPI application instance
 app = FastAPI(
@@ -63,22 +76,17 @@ class RecommendResponse(BaseModel):
     recommendation: str = Field(..., description="Personalized food recommendation")
 
 
-class OpenWebUILLM(LLM):
-    """
-    Custom LangChain LLM wrapper for Open WebUI API.
-    
-    This class integrates the Open WebUI API with LangChain's LLM interface,
-    allowing us to use the API in LangChain chains and pipelines.
-    """
-    
+class OpenAICompatibleLLM(LLM):
+    """LangChain LLM wrapper for any OpenAI-compatible /v1/chat/completions endpoint."""
+
     api_url: str = API_URL
-    api_key: str = CHAIR_API_KEY
-    model_name: str = "llama3:latest"
-    
+    api_key: Optional[str] = LLM_API_KEY
+    model_name: str = MODEL_NAME
+
     @property
     def _llm_type(self) -> str:
-        return "open_webui"
-    
+        return "openai_compatible"
+
     def _call(
         self,
         prompt: str,
@@ -87,33 +95,29 @@ class OpenWebUILLM(LLM):
         **kwargs: Any,
     ) -> str:
         """
-        Call the Open WebUI API to generate a response.
-        
+        Call the OpenAI-compatible API to generate a response.
+
         Args:
             prompt: The input prompt to send to the model
             stop: Optional list of stop sequences
             run_manager: Optional callback manager for LangChain
             **kwargs: Additional keyword arguments
-            
+
         Returns:
             The generated response text
-            
+
         Raises:
             Exception: If API call fails
         """
-        if not self.api_key:
-            raise ValueError("CHAIR_API_KEY environment variable is required")
-        
-        headers = {
-            "Authorization": f"Bearer {self.api_key}",
-            "Content-Type": "application/json",
-        }
-        
+        headers = {"Content-Type": "application/json"}
+        if self.api_key:
+            headers["Authorization"] = f"Bearer {self.api_key}"
+
         # Build messages for chat completion
         messages = [
             {"role": "user", "content": prompt}
         ]
-        
+
         payload = {
             "model": self.model_name,
             "messages": messages,
@@ -144,7 +148,7 @@ class OpenWebUILLM(LLM):
 
 
 # Initialize the LLM
-llm = OpenWebUILLM()
+llm = OpenAICompatibleLLM()
 
 # Create the prompt template
 recommendation_prompt = PromptTemplate(
@@ -168,7 +172,7 @@ Example format: Spaghetti Carbonara
 Recommendation:"""
 )
 
-# Create the chain using the new RunnableSequence patternAdd commentMore actions
+# Create the chain using the new RunnableSequence pattern
 recommendation_chain = recommendation_prompt | llm
 
 @app.get("/health")
@@ -181,11 +185,11 @@ async def health_check():
     "/recommend",
     response_model=RecommendResponse,
     summary="Generate personalized food recommendation",
-    description="Accepts user's favorite meals and today's menu, returns a personalized meal recommendation via Ollama."
+    description="Accepts user's favorite meals and today's menu, returns a personalized meal recommendation via an OpenAI-compatible LLM (e.g. LM Studio)."
 )
 async def recommend(req: RecommendRequest) -> RecommendResponse:
     """
-    Generate a personalized food recommendation using LangChain and Ollama.
+    Generate a personalized food recommendation using LangChain against an OpenAI-compatible LLM endpoint.
     
     Args:
         req: Request containing user's favorite meals and today's menu
@@ -237,7 +241,7 @@ async def root():
     return {
         "service": "LLM Recommendation Service",
         "version": "1.0.0",
-        "description": "Generates personalized food recommendations using LangChain and Open WebUI",
+        "description": "Generates personalized food recommendations using LangChain against an OpenAI-compatible LLM endpoint (e.g. LM Studio).",
         "endpoints": {
             "health": "/health",
             "recommend": "/recommend",
@@ -251,12 +255,12 @@ if __name__ == "__main__":
     Entry point for `python main.py` invocation.
     Starts Uvicorn server serving this FastAPI app.
 
-    Honors PORT environment variable (default: 5000).
+    Honors PORT environment variable (default: 5001).
     Reload=True enables live-reload during development.
     """
     import uvicorn
 
-    port = int(os.getenv("PORT", 5000))
+    port = int(os.getenv("PORT", 5001))
     
     print(f"Starting LLM Recommendation Service on port {port}")
     print(f"API Documentation available at: http://localhost:{port}/docs")

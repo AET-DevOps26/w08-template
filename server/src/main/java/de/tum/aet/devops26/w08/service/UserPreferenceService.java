@@ -1,7 +1,7 @@
-package de.tum.aet.devops25.w07.service;
+package de.tum.aet.devops26.w08.service;
 
-import de.tum.aet.devops25.w07.UserPreferenceRepository;
-import de.tum.aet.devops25.w07.entity.UserPreferences;
+import de.tum.aet.devops26.w08.UserPreferenceRepository;
+import de.tum.aet.devops26.w08.entity.UserPreferences;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

@@ -1,8 +1,8 @@
-package de.tum.aet.devops25.w07.service;
+package de.tum.aet.devops26.w08.service;
 
-import de.tum.aet.devops25.w07.dto.Day;
-import de.tum.aet.devops25.w07.dto.Dish;
-import de.tum.aet.devops25.w07.dto.Week;
+import de.tum.aet.devops26.w08.dto.Day;
+import de.tum.aet.devops26.w08.dto.Dish;
+import de.tum.aet.devops26.w08.dto.Week;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;

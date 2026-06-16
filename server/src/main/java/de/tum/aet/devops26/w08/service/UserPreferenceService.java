@@ -4,6 +4,7 @@ import de.tum.aet.devops26.w08.UserPreferenceRepository;
 import de.tum.aet.devops26.w08.entity.UserPreferences;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -40,7 +41,7 @@ public class UserPreferenceService {
                 return userPreferences; // Return existing without saving if duplicate
             })
             .orElseGet(() -> {
-                UserPreferences newPreferences = new UserPreferences(name, List.of(meal));
+                UserPreferences newPreferences = new UserPreferences(name, new ArrayList<>(List.of(meal)));
                 return repository.save(newPreferences);
             });
     }

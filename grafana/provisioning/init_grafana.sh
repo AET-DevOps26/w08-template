@@ -4,7 +4,7 @@ echo "Starting Grafana initialization process!"
 
 echo "Checking provisioning files."
 #Grafana automatically provisions if the path is like this.
-DATASOURCE_FILE='/etc/grafana/provisioning/datasource/prometheus.yml'
+DATASOURCE_FILE='/etc/grafana/provisioning/datasources/prometheus.yml'
 DASHBOARD_DIR='/etc/grafana/provisioning/dashboards'
 
 if [ ! -f "$DATASOURCE_FILE" ]; then

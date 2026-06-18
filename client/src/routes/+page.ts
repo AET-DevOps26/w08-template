@@ -24,9 +24,9 @@ export const load: PageLoad = async ({ fetch }) => {
 
     // Execute all requests in parallel, don't wait for slow ones to complete
     const [mealsResult, preferencesResult, recommendationResult] = await Promise.allSettled([
-        fetch(`${BaseURL}/mensa-garching/today`).then(res => res.json()),
-        fetch(`${BaseURL}/preferences/${username}`).then(res => res.json()),
-        fetch(`${BaseURL}/recommend/${username}`).then(res => res.json())
+        fetch(`${BaseURL}/mensa-garching/today`).then(res => res.status === 204 ? null : res.json()),
+        fetch(`${BaseURL}/preferences/${username}`).then(res => res.status === 204 ? null : res.json()),
+        fetch(`${BaseURL}/recommend/${username}`).then(res => res.status === 204 ? null : res.json())
     ]);
 
     // Extract successful results or provide defaults
